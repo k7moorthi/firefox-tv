@@ -1,5 +1,17 @@
 [
     {
+        "id": "airtelXstream",
+        "url": "https://www.airtelxstream.in/",
+        "title": "Airtel Xstream",
+        "img": "tile_airtel_xstream.png"
+    },
+    {
+        "id": "vodafonePlay",
+        "url": "https://www.vodafoneplay.in/",
+        "title": "Vodafone Play",
+        "img": "tile_vodafone_play.png"
+    },
+    {
         "id": "youtube",
         /* Use this URL to ensure users see the best formatted website. */
         "url": "https://ftv.cdn.mozilla.net/ytht",
