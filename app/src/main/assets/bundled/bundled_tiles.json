@@ -12,6 +12,24 @@
         "img": "tile_vodafone_play.png"
     },
     {
+        "id": "jioCinema",
+        "url": "https://www.jiocinema.com/",
+        "title": "Jio Cinema",
+        "img": "tile_jio_cinema.png"
+    },
+    {
+        "id": "watcho",
+        "url": "https://www.watcho.com/",
+        "title": "Watcho",
+        "img": "tile_watcho.png"
+    },
+    {
+        "id": "tataSky",
+        "url": "https://watch.tatasky.com/",
+        "title": "TataSky",
+        "img": "tile_tatasky.png"
+    },
+    {
         "id": "youtube",
         /* Use this URL to ensure users see the best formatted website. */
         "url": "https://ftv.cdn.mozilla.net/ytht",
