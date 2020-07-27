@@ -4,6 +4,9 @@
 
 import org.mozilla.gradle.tasks.ValidateAndroidAppReleaseConfiguration
 
+plugins {
+    id "com.jetbrains.python.envs" version "0.0.26"
+}
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply plugin: 'kotlin-android'
@@ -26,7 +29,7 @@ android {
         targetSdkVersion 28
         versionCode 11 // This versionCode is "frozen" for local builds. For "release" builds we
         // override this with a generated versionCode at build time.
-        versionName "4.6"
+        versionName "4.7.1"
         testInstrumentationRunner "org.mozilla.tv.firefox.FirefoxOnDeviceTestRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
 
@@ -125,6 +128,11 @@ configurations {
     geckoImplementation {}
 }
 
+// Generate markdown docs for the collected metrics.
+ext.gleanGenerateMarkdownDocs = true
+ext.gleanDocsDirectory = "$rootDir/docs/glean"
+apply from: 'https://github.com/mozilla-mobile/android-components/raw/v' + rootProject.ext.moz_components_version + '/components/service/glean/scripts/sdk_generator.gradle'
+
 dependencies {
     implementation 'io.sentry:sentry-android:1.7.21'
 
@@ -216,6 +224,10 @@ dependencies {
     androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.10.0'
     testImplementation 'com.squareup.okhttp3:mockwebserver:3.10.0'
 
+    // For the initial release of Glean 19, we require consumer applications to
+    // depend on a separate library for unit tests. This will be removed in future releases.
+    testImplementation "org.mozilla.telemetry:glean-forUnitTests:21.3.0"
+
     androidTestImplementation "tools.fastlane:screengrab:1.2.0", {
         // This Fastlane dependency causes our builds to fail due to having two different
         // versions of UiAutomator. Fastlane is not on the most recent version of
@@ -236,7 +248,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-oss-licenses:$oss_licenses_version"
 }
 
-task validateReleaseConfiguration(type: ValidateAndroidAppReleaseConfiguration)
+// Removed due to glean upgrade - https://github.com/mozilla-mobile/firefox-tv/issues/2989
+// task validateReleaseConfiguration(type: ValidateAndroidAppReleaseConfiguration)
 
 // -------------------------------------------------------------------------------------------------
 //  Dynamically set versionCode (See tools/build/versionCode.gradle
@@ -251,6 +264,15 @@ android.applicationVariants.all { variant ->
     }
 
     println("Build type: " + buildType + " (versionCode = " + variant.mergedFlavor.versionCode + ")")
+}
+
+// Disable unit tests for gecko since we don't actively support gecko variant for FFTV
+gradle.taskGraph.useFilter { task ->
+    if (task.name.startsWith("test") && task.name.contains("Gecko")) {
+        return false;
+    }
+
+    return true;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -286,7 +308,6 @@ def addSecretToBuildConfig(variant, fieldName, fileBaseName) {
 
 android.applicationVariants.all { variant ->
     addSecretToBuildConfig(variant, 'SENTRY_DSN', ".sentry_dsn")
-    addSecretToBuildConfig(variant, 'POCKET_KEY', ".pocket_key")
 }
 
 // -------------------------------------------------------------------------------------------------
